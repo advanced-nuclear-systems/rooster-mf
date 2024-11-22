@@ -13,8 +13,11 @@ module Control_mod
   implicit none
   !== SHARED variables ==
   character(len=20) :: id, mat, cate, pid, sigid
+  character(len=20) :: mats(maxnlyr) = 'end'
   real(c_double) :: ri, ro, tmp0, p0
-  integer(c_int) :: nr, pnode, mltpl, nomp
+  real(c_double) :: ris(maxnlyr) = -1.d0
+  integer(c_int) :: nr, pnode, mltpl, nomp = 1, nlyr = 1
+  integer(c_int) :: nrs(maxnlyr) = -1
   !== UNIQUE variables ==
   ! XTIME variables-----------------------------------------------------
   real(c_double) :: tstart= 0.0d0  , tend  = 1.d+02, dtout = 1.d+01
@@ -72,7 +75,8 @@ module Control_mod
   NAMELIST /XTHBC/ id    , cate  , bcval , pid   , pnode 
   ! XHSTR namelist 10.--------------------------------------------------
   NAMELIST /XHSTR/ id    , mat   , bcl   , bcr   , ri    , ro    , &
-                   nr    , tmp0  , mltpl
+                   nr    , tmp0  , mltpl , mats  , ris   , nrs   , &
+                   nlyr
   ! XSGNL namelist 11.--------------------------------------------------
   NAMELIST /XSGNL/ id    , cate  , sgnval, sgntab
   !== NAMELIST information ==
@@ -227,7 +231,6 @@ contains
               inp_pipe(4) = dir
               inp_pipe(5) = tmp0
               inp_pipe(6) = p0
-              print*, id, tmp0
             case('brods')
               allocate(inp_pipe(8))
               inp_pipe(1) = dhyd
@@ -499,7 +502,21 @@ contains
             stop 'program stopped at Construct_inputs'
           end if
           ! initialize the heat structure objects
-          call Htstr_arr(i)%init_hs( id, mat, ri, ro, nr, tmp0, bcl_obj, bcr_obj, mltpl)
+          if(nlyr==1) then
+            ! single-layer htstr model
+            call Htstr_arr(i)%init_hs1(id, mat, ri, ro, nr, tmp0, bcl_obj, bcr_obj, mltpl)
+          else
+            ! multi-layer htstr model
+            ! check the inputs
+            do j = 1, nlyr+1
+              if(j<nlyr+1) then
+                if(mats(j)=='end') stop 'check mats input for htstr multi-layer model'
+                if(nrs(j)==-1)     stop 'check nrs input for htstr multi-layer model'
+              end if
+              if(ris(j)==-1.d0)  stop 'check ris input for htstr multi-layer model'
+            end do
+            call Htstr_arr(i)%init_hs2(id,mats(1:nlyr),ris(1:nlyr+1),nrs(1:nlyr),nlyr,tmp0,bcl_obj,bcr_obj,mltpl)
+          end if
         end do
         ! assign the Htstr_arr to Reactor_obj (shallow copy)
         call Reactor_glo%Solid%init_sld_h(Htstr_arr)

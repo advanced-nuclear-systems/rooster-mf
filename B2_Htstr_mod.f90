@@ -16,15 +16,24 @@ module Htstr_mod
     !======= Member Variables =========
     ! id_string, material_id
     character(len=20) :: idstr, matid
+    ! material_ids only for multi-layer model
+    character(len=20), allocatable :: mats(:)
     ! inner_radius, outer_radius, node_size
     real(c_double) :: ri, ro, dr
+    ! interfaces positions, node_sizes of layers
+    ! only for multi-layer model
+    real(c_double), allocatable :: ris(:), drs(:)
     ! node_quantity
     integer(c_int) :: nr
+    ! number of layers
+    integer(c_int) :: nlyr = 1
+    ! node_quantities of layers, only for multi-layer model
+    integer(c_int), allocatable :: nrs(:)
     ! multiplier
     integer(c_int) :: mltpl
     ! heat_flux on inner/outer boundaries
     real(c_double) :: qflux_i, qflux_o
-    ! node_volume, node_center_positions, inner_boundary_positions
+    ! node_volume, node_center_positions, inner_node_boundary_positions
     real(c_double), allocatable :: vol(:), rc(:), rb(:)
     ! density, heat_capacity, heat_conductivity, temperature 
     real(c_double), allocatable :: rho(:), cp(:), kpa(:), temp(:)
@@ -33,14 +42,15 @@ module Htstr_mod
 
   contains
     !======= Member Procedures =========
-    procedure :: init_hs     ! constructor
+    procedure :: init_hs1    ! constructor for single-layer model
+    procedure :: init_hs2    ! constructor for multi-layer model
     procedure :: calc_prop   ! calculate material properties
     procedure :: calc_rhs_hs ! calculate right-hand-side arrays
   
   end type Htstr
 
 contains
-  subroutine init_hs(self, idstr, matid, ri, ro, nr, tmp0, bcleft, bcright, mltpl)
+  subroutine init_hs1(self, idstr, matid, ri, ro, nr, tmp0, bcleft, bcright, mltpl)
     !======= Declarations =========
     implicit none
     !== I/O variables ==
@@ -91,17 +101,95 @@ contains
     self%bcright= bcright
     ! initialize the mltpl
     self%mltpl = mltpl
+  end subroutine init_hs1
   
-  end subroutine init_hs
-  
+  subroutine init_hs2(self, idstr, mats ,ris, nrs, nlyr, tmp0, bcleft, bcright, mltpl)
+    !======= Declarations =========
+    implicit none
+    !== I/O variables ==
+    class(Htstr), intent(inout) :: self
+    character(len=20), intent(in) :: idstr
+    character(len=20), intent(in) :: mats(:)
+    real(c_double), intent(in) :: ris(:)
+    integer(c_int), intent(in) :: nrs(:)
+    integer(c_int), intent(in) :: nlyr
+    real(c_double), intent(in) :: tmp0   ! Initial temperature
+    type(Thermbc)   :: bcleft, bcright
+    integer(c_int), intent(in) :: mltpl
+    !== local variables ==
+    integer(c_int) :: i, j
+    !======= Internals ============
+    self%idstr = idstr
+    allocate(self%mats(nlyr))
+    allocate(self%ris(nlyr+1))
+    allocate(self%nrs(nlyr))
+    self%mats = mats
+    self%ris  = ris
+    self%ri   = ris(1)
+    self%ro   = ris(nlyr+1)
+    self%nrs  = nrs
+    self%nr   = sum(nrs)
+    self%nlyr = nlyr
+    allocate(self%drs(self%nr))
+    j = 1
+    do i = 1, nlyr
+      if(i==1.or.i==nlyr) then
+        self%drs(j:j+nrs(i)-1) = (ris(i+1)-ris(i))/(real(nrs(i),kind=c_double)-0.5d0)
+      else
+        self%drs(j:j+nrs(i)-1) = (ris(i+1)-ris(i))/(real(nrs(i),kind=c_double))
+      end if
+      j = j + nrs(i)
+    end do
+    ! allocate the arrays
+    allocate(self%vol(self%nr) )
+    allocate(self%rb(self%nr-1))
+    self%rb(1) = self%ri + self%drs(1)*0.5d0
+    ! inner node boundary position
+    do i = 2, self%nr-1
+      self%rb(i) = self%rb(i-1) + self%drs(i)
+    end do
+    ! node volume
+    do i = 1, self%nr
+      if(i==1) then
+        self%vol(i) = pi*(self%rb(i)**(2.d0)-self%ri**(2.d0))
+      else if(i==self%nr) then
+        self%vol(i) = pi*(self%ro**(2.d0)-self%rb(i-1)**(2.d0))
+      else
+        self%vol(i) = pi*(self%rb(i)**(2.d0)-self%rb(i-1)**(2.d0))
+      end if
+    end do
+    ! allocate the arrays for properties 
+    allocate(self%rho(self%nr) )
+    allocate(self%cp(self%nr)  )
+    allocate(self%kpa(self%nr) )
+    allocate(self%temp(self%nr))
+    ! initialize node temperature array
+    self%temp = tmp0
+    ! initialize the thermbc 
+    self%bcleft = bcleft
+    self%bcright= bcright
+    ! initialize the mltpl
+    self%mltpl = mltpl
+  end subroutine init_hs2
+
   subroutine calc_prop(self)
     !======= Declarations =========
     implicit none
     !== I/O variables ==
     class(Htstr), intent(inout) :: self
-     
+    !== local variables ==
+    integer(c_int) :: i, j, k
     !======= Internals ============
-    call matpro_s(self%matid, self%temp, self%rho, self%cp, self%kpa)
+    if(self%nlyr==1) then
+      call matpro_s(self%matid, self%temp, self%rho, self%cp, self%kpa)
+    else
+      j = 1
+      do i = 1, self%nlyr
+        k = j+self%nrs(i)-1
+        call matpro_s(self%mats(i), self%temp(j:k), self%rho(j:k), self%cp(j:k), self%kpa(j:k))
+        j = k+1
+      end do
+    end if
 
   end subroutine calc_prop
   
@@ -126,10 +214,18 @@ contains
     ! update the thermal properties
     call self%calc_prop()
     ! calculate the heatflux at interior cell boundaries
-    do i = 1, self%nr-1
-      qflux(i) = (self%temp(i)-self%temp(i+1))/(0.5d0*self%dr*(1.d0/self%kpa(i)+1.d0/self%kpa(i+1)))
-    end do
-    ! calculate the interior nodes of rhs array
+    if(self%nlyr==1) then
+      ! single-layer model
+      do i = 1, self%nr-1
+        qflux(i) = (self%temp(i)-self%temp(i+1))/(0.5d0*self%dr*(1.d0/self%kpa(i)+1.d0/self%kpa(i+1)))
+      end do
+    else
+      ! multi-layer model
+      do i = 1, self%nr-1
+        qflux(i) = (self%temp(i)-self%temp(i+1))/(0.5d0*(self%drs(i)/self%kpa(i)+self%drs(i+1)/self%kpa(i+1)))
+      end do
+    end if
+    ! calculate the rhs array of interior nodes
     do i = 2, self%nr-1
       rhs(i) = qflux(i-1)*2.d0*pi*self%rb(i-1) - qflux(i)*2.d0*pi*self%rb(i)
     end do

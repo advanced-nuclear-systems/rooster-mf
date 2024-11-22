@@ -21,7 +21,8 @@ module Glodata_mod
   real(c_double), parameter :: huge   = 1.0d+20
   real(c_double), parameter :: endval = 1145141919810.d0 ! end marker
   ! array sizes
-  integer(c_int), parameter :: maxtab = 100    ! maximum table length
+  integer(c_int), parameter :: maxtab = 100    ! maximum lookup table length
+  integer(c_int), parameter :: maxnlyr= 10     ! maximum number of fuel/htstr layers
   integer(c_int), parameter :: nnmlst = 11     ! total number of namelists
   integer(c_int), parameter :: nsolvr = 4      ! total number of solvers
   integer(c_int), parameter :: nfluids= 4      ! total number of fluids
