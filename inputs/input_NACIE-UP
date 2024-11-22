@@ -10,7 +10,7 @@
 ! Time details
 !----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
 !!!!!!! tstart(s)     tend(s)      dtout(s)     dtini(s)       dtmin(s)       dtmax(s)
- &XTIME tstart=0.d00  tend=1.0d04  dtout=1.d+2  dtini=1.0d-10  dtmin=1.0d-10  dtmax=1.0d-1 /
+ &XTIME tstart=0.d00  tend=1.0d04  dtout=1.d+1  dtini=1.0d-10  dtmin=1.0d-10  dtmax=1.0d-1 /
 !!!!!!! solvers 1.       2.              num_of_threads(-)  rtol(-)      atol
  &XSOLV solver='fluid','htstr','fuelrod' nomp=1             rt=1.0d-06   at=1.0d-5, 1.0d-5, 1.0d-4, 1.0d-5
 !mxsteps           maxnef       maxcor       solopt 
@@ -92,7 +92,6 @@
  &XFROD id='FR08' fid='F1'  hgap=5678.d0  cid='C1'  pid='FPS'  pnode= 8  mltpl=19  kr=1.d0  kz=1.d0 /
  &XFROD id='FR09' fid='F1'  hgap=5678.d0  cid='C1'  pid='FPS'  pnode= 9  mltpl=19  kr=1.d0  kz=1.d0 /
  &XFROD id='FR10' fid='F1'  hgap=5678.d0  cid='C1'  pid='FPS'  pnode=10  mltpl=19  kr=1.d0  kz=1.d0 /
-
  &XFROD id='FR11' fid='F1'  hgap=5678.d0  cid='C1'  pid='FPS'  pnode=11  mltpl=19  kr=1.d0  kz=1.d0 /
  &XFROD id='FR12' fid='F1'  hgap=5678.d0  cid='C1'  pid='FPS'  pnode=12  mltpl=19  kr=1.d0  kz=1.d0 /
  &XFROD id='FR13' fid='F1'  hgap=5678.d0  cid='C1'  pid='FPS'  pnode=13  mltpl=19  kr=1.d0  kz=1.d0 /
@@ -107,23 +106,23 @@
 ! Heat structure
 !----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
 ! Tube wall structure
-!!!!!!! id          matid        ri(m)        ro(m)        nr     tmp0(K)        bcleft       bcright      multiplier
- &XHSTR id='HS701'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL701'  bcr='BR701'  mltpl=7 /
- &XHSTR id='HS702'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL702'  bcr='BR702'  mltpl=7 /
- &XHSTR id='HS703'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL703'  bcr='BR703'  mltpl=7 /
- &XHSTR id='HS704'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL704'  bcr='BR704'  mltpl=7 /
- &XHSTR id='HS705'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL705'  bcr='BR705'  mltpl=7 /
- &XHSTR id='HS706'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL706'  bcr='BR706'  mltpl=7 /
- &XHSTR id='HS707'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL707'  bcr='BR707'  mltpl=7 /
- &XHSTR id='HS708'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL708'  bcr='BR708'  mltpl=7 /
- &XHSTR id='HS709'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL709'  bcr='BR709'  mltpl=7 /
- &XHSTR id='HS710'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL710'  bcr='BR710'  mltpl=7 /
- &XHSTR id='HS711'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL711'  bcr='BR711'  mltpl=7 /
- &XHSTR id='HS712'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL712'  bcr='BR712'  mltpl=7 /
- &XHSTR id='HS713'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL713'  bcr='BR713'  mltpl=7 /
- &XHSTR id='HS714'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL714'  bcr='BR714'  mltpl=7 /
- &XHSTR id='HS715'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL715'  bcr='BR715'  mltpl=7 /
- &XHSTR id='HS716'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL716'  bcr='BR716'  mltpl=7 /
+!!!!!!! id         matid                         ris(m)                                 nrs       nlyr   tmp0(K)       bcleft      bcright     multiplier
+ &XHSTR id='HS701' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL701' bcr='BR701' mltpl=7 /
+ &XHSTR id='HS702' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL702' bcr='BR702' mltpl=7 /
+ &XHSTR id='HS703' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL703' bcr='BR703' mltpl=7 /
+ &XHSTR id='HS704' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL704' bcr='BR704' mltpl=7 /
+ &XHSTR id='HS705' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL705' bcr='BR705' mltpl=7 /
+ &XHSTR id='HS706' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL706' bcr='BR706' mltpl=7 /
+ &XHSTR id='HS707' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL707' bcr='BR707' mltpl=7 /
+ &XHSTR id='HS708' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL708' bcr='BR708' mltpl=7 /
+ &XHSTR id='HS709' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL709' bcr='BR709' mltpl=7 /
+ &XHSTR id='HS710' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL710' bcr='BR710' mltpl=7 /
+ &XHSTR id='HS711' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL711' bcr='BR711' mltpl=7 /
+ &XHSTR id='HS712' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL712' bcr='BR712' mltpl=7 /
+ &XHSTR id='HS713' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL713' bcr='BR713' mltpl=7 /
+ &XHSTR id='HS714' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL714' bcr='BR714' mltpl=7 /
+ &XHSTR id='HS715' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL715' bcr='BR715' mltpl=7 /
+ &XHSTR id='HS716' mats='ss316','powder','ss316' ris=31.35d-3,36.5d-3,38.95d-3,44.45d-3 nrs=3,3,3 nlyr=3 tmp0=4.4315d2 bcl='BL716' bcr='BR716' mltpl=7 /
 !----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
 ! Thermal boundary
 !----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
