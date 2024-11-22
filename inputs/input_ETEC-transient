@@ -1,0 +1,353 @@
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+!
+! Rooster_fmod input: ETEC transient simulation
+! 
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+!----- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- -----------
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Time details
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+!!!!!!! tstart(s)     tend(s)      dtout(s)      dtini(s)       dtmin(s)       dtmax(s)
+ &XTIME tstart=0.d00  tend=1.5d04  dtout=5.d0    dtini=1.0d-10  dtmin=1.0d-15  dtmax=1.0d-1 /
+!!!!!!! solvers 1.       2.       num_of_threads(-)  rtol(-)      atol
+ &XSOLV solver='fluid', 'htstr'   nomp=1             rt=1.0d-06   at=1.0d-5, 1.0d-5, 1.0d-4, 1.0d-5
+!set CVode solver
+ mxsteps= 1000000  maxnef = 10  maxcor = 10  solopt = 4
+ /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Fluid system - sodium side
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! The pipes
+!!!!!!! id          matid      category      p0(Pa)    tmp0(K)          sigid
+ &XPIPE id='IN1'    mat='Na1'  cate='fill'   p0=5.0d5  tmp0=600.0000d0  sigid='tna_in'/
+!!!!!!! id          matid      category      nz(-)     dhyd(m)         length(m)     areaz(m2)       dir(-)    tmp0(K)     p0(Pa)
+ &XPIPE id='PE100'  mat='Na1'  cate='round'  nz=14     dhyd=5.1816d-2  len=14.021d0  areaz=4.891d-1  dir=-1.d0 tmp0=5.0d2  p0=5.0d5 /
+!!!!!!! id          matid      category      tmp0(K)     p0(Pa)      sigid
+ &XPIPE id='OT1'    mat='Na1'  cate='break'  tmp0=5.0d2  p0=5.0d5    sigid='pna_ot' /
+! The junctions
+!!!!!!! cate             pid_f           pid_t          sigid
+ &XJUNC  cate='jun-flow'  pid_f='IN1'    pid_t='PE100'  sigid='mfr_1' /  
+ &XJUNC  cate='jun-norm'  pid_f='PE100'  pid_t='OT1' /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Fluid system - secondary side
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! The pipes
+!!!!!!! id          matid      category      p0(Pa)        tmp0(K)      sigid
+ &XPIPE id='IN2'    mat='H2O'  cate='fill'   p0=13.0879d6  tmp0=484.d0  sigid='th2o_in'/ 
+!!!!!!! id          matid      category      nz(-)   dhyd(m)         length(m)     areaz(m2)       dir(-)    tmp0(K)    p0(Pa)
+ &XPIPE id='PE200'  mat='H2O'  cate='round'  nz=14  dhyd=1.0338d-2  len=14.021d0  areaz=6.354d-2  dir=1.d0  tmp0=5.0d2  p0=13.0879d6 /
+!!!!!!! id          matid      category      tmp0(K)     p0(Pa)        sigid
+ &XPIPE id='OT2'    mat='H2O'  cate='break'  tmp0=5.0d2  p0=13.0879d6  sigid='ph2o_ot'/
+! The junctions
+!!!!!!! cate             pid_f          pid_t          sigid
+ &XJUNC  cate='jun-flow'  pid_f='IN2'   pid_t='PE200'  sigid='mfr_2' /
+ &XJUNC  cate='jun-norm'  pid_f='PE200' pid_t='OT2' /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Heat structure
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Tube wall structure
+!!!!!!! id          matid        ri(m)        ro(m)         nr     tmp0(K)     bcleft       bcright      multiplier
+ &XHSTR id='DW101'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI101'  bcr='DO101'  mltpl=757 /
+ &XHSTR id='DW102'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI102'  bcr='DO102'  mltpl=757 /
+ &XHSTR id='DW103'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI103'  bcr='DO103'  mltpl=757 /
+ &XHSTR id='DW104'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI104'  bcr='DO104'  mltpl=757 /
+ &XHSTR id='DW105'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI105'  bcr='DO105'  mltpl=757 /
+ &XHSTR id='DW106'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI106'  bcr='DO106'  mltpl=757 /
+ &XHSTR id='DW107'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI107'  bcr='DO107'  mltpl=757 /
+ &XHSTR id='DW108'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI108'  bcr='DO108'  mltpl=757 /
+ &XHSTR id='DW109'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI109'  bcr='DO109'  mltpl=757 /
+ &XHSTR id='DW110'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI110'  bcr='DO110'  mltpl=757 /
+ &XHSTR id='DW111'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI111'  bcr='DO111'  mltpl=757 /
+ &XHSTR id='DW112'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI112'  bcr='DO112'  mltpl=757 /
+ &XHSTR id='DW113'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI113'  bcr='DO113'  mltpl=757 /
+ &XHSTR id='DW114'  mat='ss316'  ri=5.169d-3  ro=7.9375d-3  nr=3   tmp0=5.0d2  bcl='DI114'  bcr='DO114'  mltpl=757 /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Thermal boundary
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Left boundaries
+!!!!!!! id          category         pipeid       pipenode
+ &XTHBC id='DI101'  cate='coupling'  pid='PE100'  pnode= 1 /
+ &XTHBC id='DI102'  cate='coupling'  pid='PE100'  pnode= 2 /
+ &XTHBC id='DI103'  cate='coupling'  pid='PE100'  pnode= 3 /
+ &XTHBC id='DI104'  cate='coupling'  pid='PE100'  pnode= 4 /
+ &XTHBC id='DI105'  cate='coupling'  pid='PE100'  pnode= 5 /
+ &XTHBC id='DI106'  cate='coupling'  pid='PE100'  pnode= 6 /
+ &XTHBC id='DI107'  cate='coupling'  pid='PE100'  pnode= 7 /
+ &XTHBC id='DI108'  cate='coupling'  pid='PE100'  pnode= 8 /
+ &XTHBC id='DI109'  cate='coupling'  pid='PE100'  pnode= 9 /
+ &XTHBC id='DI110'  cate='coupling'  pid='PE100'  pnode=10 /
+ &XTHBC id='DI111'  cate='coupling'  pid='PE100'  pnode=11 /
+ &XTHBC id='DI112'  cate='coupling'  pid='PE100'  pnode=12 /
+ &XTHBC id='DI113'  cate='coupling'  pid='PE100'  pnode=13 /
+ &XTHBC id='DI114'  cate='coupling'  pid='PE100'  pnode=14 /
+! Right boundaries
+!!!!!!! id          category         pipeid     
+ &XTHBC id='DO101'  cate='coupling'  pid='PE200'  pnode=14 /
+ &XTHBC id='DO102'  cate='coupling'  pid='PE200'  pnode=13 /
+ &XTHBC id='DO103'  cate='coupling'  pid='PE200'  pnode=12 /
+ &XTHBC id='DO104'  cate='coupling'  pid='PE200'  pnode=11 /
+ &XTHBC id='DO105'  cate='coupling'  pid='PE200'  pnode=10 /
+ &XTHBC id='DO106'  cate='coupling'  pid='PE200'  pnode= 9 /
+ &XTHBC id='DO107'  cate='coupling'  pid='PE200'  pnode= 8 /
+ &XTHBC id='DO108'  cate='coupling'  pid='PE200'  pnode= 7 /
+ &XTHBC id='DO109'  cate='coupling'  pid='PE200'  pnode= 6 /
+ &XTHBC id='DO110'  cate='coupling'  pid='PE200'  pnode= 5 /
+ &XTHBC id='DO111'  cate='coupling'  pid='PE200'  pnode= 4 /
+ &XTHBC id='DO112'  cate='coupling'  pid='PE200'  pnode= 3 /
+ &XTHBC id='DO113'  cate='coupling'  pid='PE200'  pnode= 2 /
+ &XTHBC id='DO114'  cate='coupling'  pid='PE200'  pnode= 1 /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Signals
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+!!!!!!! id            category         value
+ &XSGNL id='dtprint'  cate='lookup'  
+!signal table
+ sgntab(1,:) = 0.d0, 1.d0, 2.d0, 3.d0, 4.d0, 5.d0, 6.d0
+ sgntab(2,:) = 0.d3, 1.d3, 2.d3, 3.d4, 4.d5, 5.d5, 6.d5
+ /
+!!!!!!! id             category         value
+ &XSGNL id='tna_in'    cate='lookup'  
+ sgntab(1, 1)=   0.000d0, 731.250d0, 
+ sgntab(1, 2)= 600.000d0, 731.250d0, 
+ sgntab(1, 3)= 724.179d0, 731.273d0,
+ sgntab(1, 4)= 886.602d0, 734.389d0,
+ sgntab(1, 5)= 1026.34d0, 735.722d0,
+ sgntab(1, 6)= 1143.92d0, 733.935d0,
+ sgntab(1, 7)= 1261.15d0, 733.040d0,
+ sgntab(1, 8)= 1400.72d0, 734.818d0,
+ sgntab(1, 9)= 1470.33d0, 736.154d0,
+ sgntab(1,10)= 1610.42d0, 736.595d0,
+ sgntab(1,11)= 1727.30d0, 736.591d0,
+ sgntab(1,12)= 1845.40d0, 733.467d0,
+ sgntab(1,13)= 1916.92d0, 729.899d0,
+ sgntab(1,14)= 2127.31d0, 729.893d0,
+ sgntab(1,15)= 2267.75d0, 729.442d0,
+ sgntab(1,16)= 2502.73d0, 726.315d0,
+ sgntab(1,17)= 2621.36d0, 721.853d0,
+ sgntab(1,18)= 2762.14d0, 720.512d0,
+ sgntab(1,19)= 3185.35d0, 714.258d0,
+ sgntab(1,20)= 3348.47d0, 715.590d0,
+ sgntab(1,21)= 3441.46d0, 716.925d0,
+ sgntab(1,22)= 3559.21d0, 714.692d0,
+ sgntab(1,23)= 3699.82d0, 713.796d0,
+ sgntab(1,24)= 3817.57d0, 711.564d0,
+ sgntab(1,25)= 3958.18d0, 710.668d0,
+ sgntab(1,26)= 4145.20d0, 710.662d0,
+ sgntab(1,27)= 4261.73d0, 711.550d0,
+ sgntab(1,28)= 4424.68d0, 713.328d0,
+ sgntab(1,29)= 4587.79d0, 714.660d0,
+ sgntab(1,30)= 4680.61d0, 716.441d0,
+ sgntab(1,31)= 4773.77d0, 717.329d0,
+ sgntab(1,32)= 4844.25d0, 716.435d0,
+ sgntab(1,33)= 4891.52d0, 715.097d0,
+ sgntab(1,34)= 4939.66d0, 711.529d0,
+ sgntab(1,35)= 5011.01d0, 708.407d0,
+ sgntab(1,36)= 5199.24d0, 705.280d0,
+ sgntab(1,37)= 5341.41d0, 700.373d0,
+ sgntab(1,38)= 5436.14d0, 697.249d0,
+ sgntab(1,39)= 5576.75d0, 696.353d0,
+ sgntab(1,40)= 5693.46d0, 696.796d0,
+ sgntab(1,41)= 5762.54d0, 699.468d0,
+ sgntab(1,42)= 5831.63d0, 702.140d0,
+ sgntab(1,43)= 5901.07d0, 703.921d0,
+ sgntab(1,44)= 5970.85d0, 704.811d0,
+ sgntab(1,45)= 6181.07d0, 705.250d0,
+ sgntab(1,46)= 6391.64d0, 704.798d0,
+ sgntab(1,47)= 6580.04d0, 701.226d0,
+ sgntab(1,48)= 6838.75d0, 697.206d0,
+ sgntab(1,49)= 7074.26d0, 692.741d0,
+ sgntab(1,50)= 7426.13d0, 689.610d0,
+ sgntab(1,51)= 7778.17d0, 686.033d0,
+ sgntab(1,52)= 8341.12d0, 681.112d0,
+ sgntab(1,53)= 8858.20d0, 673.964d0,
+ sgntab(1,54)= 9186.51d0, 671.279d0,
+ sgntab(1,55)= 9396.91d0, 671.272d0,
+ sgntab(1,56)= 9748.43d0, 669.033d0,
+ sgntab(1,57)= 10147.1d0, 665.900d0,
+ sgntab(1,58)= 10522.1d0, 663.214d0,
+ sgntab(1,59)= 11154.9d0, 659.182d0,
+ sgntab(1,60)= 11458.4d0, 660.064d0,
+ sgntab(1,61)= 11900.1d0, 666.291d0,
+ sgntab(1,62)= 12157.1d0, 666.729d0,
+ sgntab(1,63)= 12529.8d0, 670.284d0,
+ sgntab(1,64)= 12833.3d0, 671.166d0,
+ sgntab(1,65)= 12972.9d0, 672.945d0,
+ sgntab(1,66)= 13276.6d0, 673.381d0,
+ sgntab(1,67)= 13486.6d0, 674.266d0,
+ sgntab(1,68)= 13791.1d0, 672.919d0,
+ sgntab(1,69)= 14094.6d0, 673.801d0,
+ sgntab(1,70)= 14281.6d0, 673.796d0,
+ sgntab(1,71)= 14914.2d0, 670.210d0,
+ sgntab(1,72)= 15000.2d0, 670.210d0,
+ /
+!!!!!!! id             category         value
+ &XSGNL id='pna_ot'    cate='constant'  
+ sgnval = 5.0d5
+ /
+!!!!!!! id             category         value
+ &XSGNL id='th2o_in'   cate='lookup' 
+ sgntab(1, 1)=   0.000d0, 484.000d0,
+ sgntab(1, 2)= 600.000d0, 484.000d0,
+ sgntab(1, 3)= 633.728d0, 483.431d0,
+ sgntab(1, 4)= 750.613d0, 483.427d0,
+ sgntab(1, 5)= 915.814d0, 479.410d0,
+ sgntab(1, 6)= 1290.71d0, 477.170d0,
+ sgntab(1, 7)= 4002.26d0, 477.531d0,
+ sgntab(1, 8)= 4210.05d0, 484.211d0,
+ sgntab(1, 9)= 4349.79d0, 485.544d0,
+ sgntab(1,10)= 4420.79d0, 483.313d0,
+ sgntab(1,11)= 4494.74d0, 473.504d0,
+ sgntab(1,12)= 4588.42d0, 473.056d0,
+ sgntab(1,13)= 4658.03d0, 474.391d0,
+ sgntab(1,14)= 4938.38d0, 474.828d0,
+ sgntab(1,15)= 5289.55d0, 473.480d0,
+ sgntab(1,16)= 5475.53d0, 476.148d0,
+ sgntab(1,17)= 5544.09d0, 480.158d0,
+ sgntab(1,18)= 5659.94d0, 482.829d0,
+ sgntab(1,19)= 5749.62d0, 492.633d0,
+ sgntab(1,20)= 5891.10d0, 489.509d0,
+ sgntab(1,21)= 6008.33d0, 488.613d0,
+ sgntab(1,22)= 6058.21d0, 480.588d0,
+ sgntab(1,23)= 6178.57d0, 471.669d0,
+ sgntab(1,24)= 6413.73d0, 468.096d0,
+ sgntab(1,25)= 6624.82d0, 466.306d0,
+ sgntab(1,26)= 6739.79d0, 471.206d0,
+ sgntab(1,27)= 6807.49d0, 477.445d0,
+ sgntab(1,28)= 6922.12d0, 483.236d0,
+ sgntab(1,29)= 7061.16d0, 486.352d0,
+ sgntab(1,30)= 7178.74d0, 484.565d0,
+ sgntab(1,31)= 7250.26d0, 480.997d0,
+ sgntab(1,32)= 7694.42d0, 480.983d0,
+ sgntab(1,33)= 8045.08d0, 480.972d0,
+ sgntab(1,34)= 8163.35d0, 477.403d0,
+ sgntab(1,35)= 8305.17d0, 473.386d0,
+ sgntab(1,36)= 8397.64d0, 476.058d0,
+ sgntab(1,37)= 8490.45d0, 477.838d0,
+ sgntab(1,38)= 8630.54d0, 478.280d0,
+ sgntab(1,39)= 9004.57d0, 478.268d0,
+ sgntab(1,40)= 9167.34d0, 480.492d0,
+ sgntab(1,41)= 9541.37d0, 480.480d0,
+ sgntab(1,42)= 9681.98d0, 479.584d0,
+ sgntab(1,43)= 9730.30d0, 475.571d0,
+ sgntab(1,44)= 9825.02d0, 472.448d0,
+ sgntab(1,45)= 9965.80d0, 471.106d0,
+ sgntab(1,46)= 10081.0d0, 475.560d0,
+ sgntab(1,47)= 10149.9d0, 478.678d0,
+ sgntab(1,48)= 10852.2d0, 475.982d0,
+ sgntab(1,49)= 11694.7d0, 473.727d0,
+ sgntab(1,50)= 11810.7d0, 475.952d0,
+ sgntab(1,51)= 11997.5d0, 476.392d0,
+ sgntab(1,52)= 13307.3d0, 474.569d0,
+ sgntab(1,53)= 13518.7d0, 471.888d0,
+ sgntab(1,54)= 13799.6d0, 470.987d0,
+ sgntab(1,55)= 13917.4d0, 468.755d0,
+ sgntab(1,56)= 13988.9d0, 465.187d0,
+ sgntab(1,57)= 14059.2d0, 464.739d0,
+ sgntab(1,58)= 14128.1d0, 467.857d0,
+ sgntab(1,59)= 14243.9d0, 470.528d0,
+ sgntab(1,60)= 14453.3d0, 473.196d0,
+ sgntab(1,61)= 14709.4d0, 475.863d0,
+ sgntab(1,62)= 15013.3d0, 475.853d0,
+ /
+!!!!!!! id             category         value
+ &XSGNL id='ph2o_ot'   cate='constant'  
+ sgnval = 13.0879d6
+ /
+!!!!!!! id            category         value
+ &XSGNL id='mfr_1'    cate='lookup' 
+ sgntab(1, 1)=   0.000d0, 257.704d0,
+ sgntab(1, 2)= 600.000d0, 257.704d0,
+ sgntab(1, 3)= 1020.88d0, 257.704d0,
+ sgntab(1, 4)= 1231.32d0, 258.196d0,
+ sgntab(1, 5)= 1652.19d0, 264.589d0,
+ sgntab(1, 6)= 1952.82d0, 267.541d0,
+ sgntab(1, 7)= 2644.26d0, 269.508d0,
+ sgntab(1, 8)= 3395.82d0, 269.508d0,
+ sgntab(1, 9)= 3606.26d0, 271.966d0,
+ sgntab(1,10)= 3816.70d0, 271.476d0,
+ sgntab(1,11)= 4027.14d0, 268.524d0,
+ sgntab(1,12)= 4297.70d0, 267.049d0,
+ sgntab(1,13)= 4598.33d0, 269.016d0,
+ sgntab(1,14)= 5319.83d0, 268.524d0,
+ sgntab(1,15)= 5470.15d0, 267.049d0,
+ sgntab(1,16)= 7033.40d0, 268.033d0,
+ sgntab(1,17)= 7694.78d0, 269.016d0,
+ sgntab(1,18)= 7875.16d0, 270.492d0,
+ sgntab(1,19)= 8175.78d0, 268.524d0,
+ sgntab(1,20)= 8686.85d0, 270.984d0,
+ sgntab(1,21)= 9107.72d0, 269.016d0,
+ sgntab(1,22)= 9438.41d0, 270.492d0,
+ sgntab(1,23)= 9859.29d0, 271.966d0,
+ sgntab(1,24)= 10310.2d0, 269.508d0,
+ sgntab(1,25)= 10490.6d0, 270.984d0,
+ sgntab(1,26)= 11001.7d0, 270.984d0,
+ sgntab(1,27)= 11152.0d0, 270.000d0,
+ sgntab(1,28)= 12625.1d0, 270.000d0,
+ sgntab(1,29)= 12805.4d0, 269.016d0,
+ sgntab(1,30)= 13707.3d0, 269.016d0,
+ sgntab(1,31)= 13917.7d0, 268.524d0,
+ sgntab(1,32)= 14128.2d0, 269.508d0,
+ sgntab(1,33)= 15120.3d0, 269.508d0,
+ sgntab(1,34)= 15360.8d0, 268.524d0,
+ sgntab(1,35)= 15601.3d0, 270.000d0,
+ sgntab(1,36)= 15992.1d0, 270.000d0,
+ /
+!!!!!!! id            category         value
+ &XSGNL id='mfr_2'    cate='lookup'  
+ sgntab(1, 1)=   0.000d0, 15.2131d0,
+ sgntab(1, 2)= 600.000d0, 15.2131d0,
+ sgntab(1, 3)= 630.063d0, 15.1803d0,
+ sgntab(1, 4)= 1050.94d0, 15.4098d0,
+ sgntab(1, 5)= 1501.88d0, 15.4426d0,
+ sgntab(1, 6)= 1682.25d0, 15.5082d0,
+ sgntab(1, 7)= 1952.82d0, 15.4098d0,
+ sgntab(1, 8)= 2283.51d0, 15.4098d0,
+ sgntab(1, 9)= 2493.95d0, 15.5082d0,
+ sgntab(1,10)= 2734.45d0, 15.6393d0,
+ sgntab(1,11)= 2884.76d0, 15.8033d0,
+ sgntab(1,12)= 3125.26d0, 15.7049d0,
+ sgntab(1,13)= 3516.08d0, 15.5410d0,
+ sgntab(1,14)= 3756.58d0, 15.5082d0,
+ sgntab(1,15)= 4087.27d0, 13.2131d0,
+ sgntab(1,16)= 4357.83d0, 13.1803d0,
+ sgntab(1,17)= 4658.46d0, 12.5902d0,
+ sgntab(1,18)= 4929.02d0, 12.6230d0,
+ sgntab(1,19)= 5019.21d0, 12.7541d0,
+ sgntab(1,20)= 5259.71d0, 12.7541d0,
+ sgntab(1,21)= 5530.27d0, 1.01639d0,
+ sgntab(1,22)= 5860.96d0, 8.98361d0,
+ sgntab(1,23)= 6402.09d0, 9.73770d0,
+ sgntab(1,24)= 6792.90d0, 9.77049d0,
+ sgntab(1,25)= 7063.47d0, 9.34426d0,
+ sgntab(1,26)= 7273.90d0, 9.47541d0,
+ sgntab(1,27)= 7484.34d0, 9.47541d0,
+ sgntab(1,28)= 7634.66d0, 9.31148d0,
+ sgntab(1,29)= 8536.53d0, 9.40984d0,
+ sgntab(1,30)= 8716.91d0, 9.27869d0,
+ sgntab(1,31)= 9137.79d0, 8.49180d0,
+ sgntab(1,32)= 9258.04d0, 8.49180d0,
+ sgntab(1,33)= 9378.29d0, 8.55738d0,
+ sgntab(1,34)= 9558.66d0, 8.55738d0,
+ sgntab(1,35)= 9949.48d0, 8.32787d0,
+ sgntab(1,36)= 10460.5d0, 7.40984d0,
+ sgntab(1,37)= 10761.2d0, 7.08197d0,
+ sgntab(1,38)= 11001.7d0, 6.39344d0,
+ sgntab(1,39)= 11212.1d0, 5.14754d0,
+ sgntab(1,40)= 11422.5d0, 4.39344d0,
+ sgntab(1,41)= 11663.0d0, 3.90164d0,
+ sgntab(1,42)= 11873.5d0, 3.86885d0,
+ sgntab(1,43)= 12174.1d0, 3.63934d0,
+ sgntab(1,44)= 12474.7d0, 3.80328d0,
+ sgntab(1,45)= 12835.5d0, 3.67213d0,
+ sgntab(1,46)= 13106.1d0, 3.73770d0,
+ sgntab(1,47)= 13346.6d0, 3.67213d0,
+ sgntab(1,48)= 13647.2d0, 3.70492d0,
+ sgntab(1,49)= 14098.1d0, 3.37705d0,
+ sgntab(1,50)= 14398.7d0, 3.50820d0,
+ sgntab(1,51)= 14789.6d0, 3.60656d0,
+ sgntab(1,52)= 15270.6d0, 3.50820d0,
+ sgntab(1,53)= 15390.8d0, 3.57377d0,
+ /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+!----- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- -----------
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
