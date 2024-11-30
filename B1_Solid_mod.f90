@@ -43,7 +43,7 @@ contains
     class(Solid), intent(inout) :: self
     class(Fuelrod), intent(in)  :: frod_array(:)
     !== local variables ==
-    integer(c_int) :: i
+    integer(c_int) :: i, j, k, n
     !======= Internals ============
     self%nfrod = size(frod_array)
     ! allocate and assign the arrays storing structure objects
@@ -60,7 +60,23 @@ contains
         self%idx1_f(i) = self%idx2_f(i-1)+1
       end if
       self%idx2_f(i) = self%idx1_f(i) + self%frods(i)%ntot-1
-      self%fvol_tot  = self%fvol_tot + sum(self%frods(i)%fuel%vol)*self%frods(i)%dz*self%frods(i)%mltpl
+      if(self%frods(i)%fuel%nlyr==1) then
+        if(self%frods(i)%fuel%isfu(1)) then
+          self%fvol_tot  = self%fvol_tot + sum(self%frods(i)%fuel%vol)*self%frods(i)%dz*self%frods(i)%mltpl
+        end if
+      else
+        do j = 1, self%frods(i)%fuel%nlyr
+          if(self%frods(i)%fuel%isfu(j)) then
+            if(j==1) then
+              k = 1
+            else
+              k = sum(self%frods(i)%fuel%nrs(1:j-1)) + 1
+            end if
+            n = self%frods(i)%fuel%nrs(j)
+            self%fvol_tot  = self%fvol_tot + sum(self%frods(i)%fuel%vol(k:k+n-1))*self%frods(i)%dz*self%frods(i)%mltpl
+          end if
+        end do
+      end if
     end do
   end subroutine init_sld_f
   

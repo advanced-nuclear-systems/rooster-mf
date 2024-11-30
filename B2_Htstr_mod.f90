@@ -165,6 +165,8 @@ contains
     allocate(self%temp(self%nr))
     ! initialize node temperature array
     self%temp = tmp0
+    ! initialize thermal physical properties
+    call self%calc_prop()
     ! initialize the thermbc 
     self%bcleft = bcleft
     self%bcright= bcright

@@ -89,6 +89,7 @@ contains
     real(c_double) :: qflux_fc
     ! rhs arrays for fuel and clad
     real(c_double), allocatable :: rhs_f(:), rhs_c(:)
+    integer(c_int) :: i, j, k
     !======= Internals ============
     ! check if input is correct
     if(size(rhs)/=self%ntot) then
@@ -100,7 +101,24 @@ contains
     ! calculate heat flux at gas gap
     qflux_fc = self%gasgap%hgap*(self%fuel%temp(self%nf)-self%clad%temp(1))
     ! patch the volumetric heat sources
-    self%fuel%qv = self%qv
+    if(self%fuel%nlyr==1) then
+      if(self%fuel%isfu(1)) then
+        self%fuel%qv = self%qv
+      end if
+    else
+      do i = 1, self%fuel%nlyr
+        if(self%fuel%isfu(i)) then
+          if(i==1) then
+            j = 1
+          else
+            j = sum(self%fuel%nrs(1:i-1)) + 1
+          end if
+          k = self%fuel%nrs(i)
+          self%fuel%qv(j:j+k-1) = self%qv
+        end if
+      end do
+    end if
+    
     ! patch the heat fluxes
     self%fuel%qflux_o = qflux_fc
     self%clad%qflux_i = qflux_fc

@@ -121,9 +121,16 @@ contains
         ! density
         rho = 7954.d0
         ! heat capacity
-        cp = (6.181d0 + 1.788d-3*temp)*10.165d0*4.184d0
+        cp  = (6.181d0 + 1.788d-3*temp)*10.165d0*4.184d0
         ! heat conductivity
         kpa = max(0.3d0 + 5.d-3*(tc - 200.d0), 0.3d0)
+      case('mgo') ! Mgo material, constants from google
+        ! density
+        rho = 3580.d0
+        ! heat capacity
+        cp  = 880.0d0
+        ! heat conductivity
+        kpa = 3.d0 ! 8-30 W/(m*K)
       case default
         print*, 'no match for material name = ', matid
         stop 'program stopped at matpro_s'

@@ -16,7 +16,7 @@ module Control_mod
   character(len=20) :: mats(maxnlyr) = 'end'
   real(c_double) :: ri, ro, tmp0, p0
   real(c_double) :: ris(maxnlyr) = -1.d0
-  integer(c_int) :: nr, pnode, mltpl, nomp = 1, nlyr = 1
+  integer(c_int) :: nr, pnode, mltpl, nomp = 1, nlyr
   integer(c_int) :: nrs(maxnlyr) = -1
   !== UNIQUE variables ==
   ! XTIME variables-----------------------------------------------------
@@ -37,7 +37,7 @@ module Control_mod
   ! XCORE variables-----------------------------------------------------
   real(c_double) :: power0, lambda, beta, life
   ! XFUEL variables-----------------------------------------------------
-  
+  logical :: isfu(maxnlyr) = .FALSE.
   ! XCLAD variables-----------------------------------------------------
   
   ! XFROD variables-----------------------------------------------------
@@ -65,7 +65,8 @@ module Control_mod
   ! XCORE namelist  5.--------------------------------------------------
   NAMELIST /XCORE/ power0, sigid , lambda, beta  , life  
   ! XFUEL namelist  6.--------------------------------------------------
-  NAMELIST /XFUEL/ id    , mat   , ri    , ro    , nr    , tmp0  
+  NAMELIST /XFUEL/ id    , mat   , ri    , ro    , nr    , tmp0  , &
+                   mats  , ris   , nrs   , nlyr  , isfu
   ! XCLAD namelist  7.--------------------------------------------------
   NAMELIST /XCLAD/ id    , mat   , ri    , ro    , nr    , tmp0  
   ! XFROD namelist  8.--------------------------------------------------
@@ -371,8 +372,18 @@ contains
         rewind(inpfu)
         write(0,'(1X,A15,I3)') '===/XFUEL/=== *', nmlnum(idxfuel)
         do i = 1, nmlnum(idxfuel)
+          ! re-initialize arrays
+          mats = 'end'
+          ris  = -1.d0
+          nrs  = -1
+          isfu = .FALSE.
+          nlyr = 1 
           read(inpfu, nml=XFUEL)
-          call Fuel_arr(i)%init_fp(id, mat, ri, ro, nr, tmp0)
+          if(nlyr==1) then
+            call Fuel_arr(i)%init_fp1(id, mat, ri, ro, nr, isfu(1), tmp0)
+          else
+            call Fuel_arr(i)%init_fp2(id, mats(1:nlyr), ris(1:nlyr+1), nrs(1:nlyr), isfu(1:nlyr), nlyr, tmp0)
+          end if
         end do
       else
         print*, 'missing /XFUEL/ input for fuelrod solver'
@@ -478,6 +489,7 @@ contains
         rewind(inpfu)
         write(0,'(1X,A15,I3)') '===/XHSTR/=== *', nmlnum(idxhstr)
         do i = 1, nmlnum(idxhstr)
+          nlyr = 1 ! re-initialize needed
           read(inpfu, nml=XHSTR)
           ! search for the left thermbc object
           do j = 1, nmlnum(idxthbc)
