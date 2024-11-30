@@ -1,0 +1,189 @@
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Programmer(s): Yutong CHEN @XJTU::NUTHEL, MER Dr. Konstantin MIKITYUK @PSI::ANS
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+!
+! Rooster_fmod input: NACIE-UP (in NAMELIST form)
+! 
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+!----- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- -----------
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Time details
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+!!!!!!! tstart(s)     tend(s)      dtout(s)     dtini(s)       dtmin(s)       dtmax(s)
+ &XTIME tstart=0.d00  tend=1.0d04  dtout=5.d+0  dtini=1.0d-10  dtmin=1.0d-10  dtmax=1.0d-1 /
+!!!!!!! solvers 1.       2.              num_of_threads(-)  rtol(-)      atol
+ &XSOLV solver='fluid','htstr','fuelrod' nomp=1             rt=1.0d-06   at=1.0d-5, 1.0d-5, 1.0d-4, 1.0d-5
+!mxsteps           maxnef       maxcor       solopt 
+ mxsteps= 1000000  maxnef = 10  maxcor = 10  solopt = 4
+ /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Fluid system - LBE loop
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! The pipes
+!!!!!!! id          matid      category          dhyd(m)         length(m)  areaz(m2)        tmp0(K)     p0(Pa)
+ &XPIPE id='EXPAN'  mat='LBE'  cate='freelevel'  dhyd=2.5451d-1  len=4.d-1  areaz=5.0874d-2  tmp0=5.d2   p0=1.d5 /
+!!!!!!! id          matid      category      nz(-)  dhyd(m)        length(m)   areaz(m2)       dir(-)     tmp0(K)     p0(Pa)
+ &XPIPE id='CONEXP' mat='LBE'  cate='round'  nz=2   dhyd=6.268d-2  len=2.d-1   areaz=3.086d-3  dir=-1.d0  tmp0=5.0d2  p0=1.d5 /
+ &XPIPE id='CONUPP' mat='LBE'  cate='round'  nz=2   dhyd=6.268d-2  len=2.d-1   areaz=3.086d-3  dir=-1.d0  tmp0=5.0d2  p0=1.d5 /
+ &XPIPE id='UPP'    mat='LBE'  cate='round'  nz=12  dhyd=6.268d-2  len=2.4d0   areaz=3.086d-3  dir= 0.d0  tmp0=5.0d2  p0=1.d5 /
+ &XPIPE id='PREHX'  mat='LBE'  cate='round'  nz=2   dhyd=6.268d-2  len=2.2d-1  areaz=3.086d-3  dir=-1.d0  tmp0=5.0d2  p0=1.d5 /
+ &XPIPE id='LOWHX'  mat='LBE'  cate='round'  nz=3   dhyd=6.270d-2  len=3.d-1   areaz=2.161d-2  dir=-1.d0  tmp0=5.0d2  p0=1.d5 /
+ &XPIPE id='HIGHHX' mat='LBE'  cate='round'  nz=16  dhyd=6.270d-2  len=2.1d0   areaz=2.161d-2  dir=-1.d0  tmp0=4.5d2  p0=1.d5 /
+ &XPIPE id='DOWN'   mat='LBE'  cate='round'  nz=10  dhyd=6.268d-2  len=5.295d0 areaz=3.086d-3  dir=-1.d0  tmp0=5.0d2  p0=1.d5 /
+ &XPIPE id='LOWER'  mat='LBE'  cate='round'  nz=4   dhyd=6.268d-2  len=2.4d0   areaz=3.086d-3  dir= 0.d0  tmp0=5.0d2  p0=1.d5 /
+ &XPIPE id='PREFPS' mat='LBE'  cate='round'  nz=2   dhyd=1.000d-1  len=8.0d-2  areaz=7.850d-3  dir= 1.d0  tmp0=5.0d2  p0=1.d5 /
+ &XPIPE id='FPS1'   mat='LBE'  cate='round'  nz=5   dhyd=4.144d-3  len=6.15d-1 areaz=6.541d-4  dir= 1.d0  tmp0=5.0d2  p0=1.d5 /
+ &XPIPE id='FPS2'   mat='LBE'  cate='round'  nz=10  dhyd=4.144d-3  len=6.00d-1 areaz=6.541d-4  dir= 1.d0  tmp0=5.0d2  p0=1.d5 /
+ &XPIPE id='FPS3'   mat='LBE'  cate='round'  nz=2   dhyd=4.144d-3  len=1.15d-1 areaz=6.541d-4  dir= 1.d0  tmp0=5.0d2  p0=1.d5 /
+ &XPIPE id='POSTFP' mat='LBE'  cate='round'  nz=5   dhyd=6.268d-2  len=1.327d0 areaz=3.086d-3  dir= 1.d0  tmp0=5.0d2  p0=1.d5 /
+ &XPIPE id='RISER'  mat='LBE'  cate='round'  nz=10  dhyd=6.268d-2  len=5.578d0 areaz=3.086d-3  dir= 1.d0  tmp0=5.0d2  p0=1.d5 /
+! The junctions
+!!!!!!! cate             pid_f          pid_t
+ &XJUNC cate='jun-norm'  pid_f='EXPAN'  pid_t='CONEXP' /
+!!!!!!! cate             pid_f          pid_t          sigid
+ &XJUNC cate='jun-head'  pid_f='CONEXP' pid_t='CONUPP' sigid='dphead' /  
+ &XJUNC cate='jun-norm'  pid_f='CONUPP' pid_t='UPP'    /
+ &XJUNC cate='jun-norm'  pid_f='UPP'    pid_t='PREHX'  /
+ &XJUNC cate='jun-norm'  pid_f='PREHX'  pid_t='LOWHX'  /
+ &XJUNC cate='jun-norm'  pid_f='LOWHX'  pid_t='HIGHHX' /
+ &XJUNC cate='jun-norm'  pid_f='HIGHHX' pid_t='DOWN'   /
+ &XJUNC cate='jun-norm'  pid_f='DOWN'   pid_t='LOWER'  /
+ &XJUNC cate='jun-norm'  pid_f='LOWER'  pid_t='PREFPS' /
+ &XJUNC cate='jun-norm'  pid_f='PREFPS' pid_t='FPS1'   /
+ &XJUNC cate='jun-norm'  pid_f='FPS1'   pid_t='FPS2'   /
+ &XJUNC cate='jun-norm'  pid_f='FPS2'   pid_t='FPS3'   /
+!!!!!!! cate             pid_f          pid_t          kfac
+ &XJUNC cate='jun-norm'  pid_f='FPS3'   pid_t='POSTFP' /!kfac= 2.2d1 /
+ &XJUNC cate='jun-norm'  pid_f='POSTFP' pid_t='RISER'  /
+ &XJUNC cate='jun-norm'  pid_f='RISER'  pid_t='EXPAN'  /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Fluid system - H2O side
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! The pipes
+!!!!!!! id         matid     category     tmp0(K)        p0(Pa)
+ &XPIPE id='IN2'   mat='H2O' cate='fill'  tmp0=443.15d0  p0=1.6d6 /
+!!!!!!! id         matid     category     nz(-)  dhyd(m)        length(m)  areaz(m2)       dir(-)    tmp0(K)        p0(Pa)
+ &XPIPE id='SECHX' mat='H2O' cate='round' nz=16  dhyd=8.954d-2  len=2.1d0  areaz=7.056d-2  dir=1.d0  tmp0=443.15d0  p0=1.6d6 /
+!!!!!!! id         matid     category     tmp0(K)        p0(Pa)
+ &XPIPE id='OT2'   mat='H2O' cate='break' tmp0=443.15d0  p0=1.6d6 /
+! The junctions
+!!!!!!! cate             pid_f          pid_t          sigid
+ &XJUNC  cate='jun-flow'  pid_f='IN2'   pid_t='SECHX'  sigid='mfr_2' /
+ &XJUNC  cate='jun-norm'  pid_f='SECHX' pid_t='OT2' /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Reactor Core
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+!!!!!!! power0
+ &XCORE power0=30.0d3 /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Fuelrod structure
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! The fuels
+!!!!!!! id       matid                      ris(m)                                       nrs         isfu         nlyr   tmp0(K)
+ &XFUEL id='FA'  mats='cu','bn','nicr','bn' ris=0.0d0,1.155d-3,1.675d-3,1.765d-3,2.54d-3 nrs=3,3,1,3 isfu=F,F,T,F nlyr=4 tmp0=5.0d2 / ! active fuel
+ &XFUEL id='FD'  mats='cu','bn','nicr','bn' ris=0.0d0,1.155d-3,1.675d-3,1.765d-3,2.54d-3 nrs=3,3,1,3 isfu=F,F,F,F nlyr=4 tmp0=5.0d2 / ! dummy fuel
+! The clads
+!!!!!!! id       matid       ri(m)       ro(m)        nr     tmp0(K)
+ &XCLAD id='C1'  mat='ss316' ri=2.540d-3 ro=3.275d-3  nr=3   tmp0=5.0d2 /
+! The fuelrods
+!!!!!!! id        fuelid    hgap          cladid    pipeid     pipenode  mltpl     kr       kz       (lower dummy rods)
+ &XFROD id='FL01' fid='FD'  hgap=1.4d4    cid='C1'  pid='FPS1' pnode= 1  mltpl=19  kr=0.d0  kz=0.d0 /
+ &XFROD id='FL02' fid='FD'  hgap=1.4d4    cid='C1'  pid='FPS1' pnode= 2  mltpl=19  kr=0.d0  kz=0.d0 /
+ &XFROD id='FL03' fid='FD'  hgap=1.4d4    cid='C1'  pid='FPS1' pnode= 3  mltpl=19  kr=0.d0  kz=0.d0 /
+ &XFROD id='FL04' fid='FD'  hgap=1.4d4    cid='C1'  pid='FPS1' pnode= 4  mltpl=19  kr=0.d0  kz=0.d0 /
+ &XFROD id='FL05' fid='FD'  hgap=1.4d4    cid='C1'  pid='FPS1' pnode= 5  mltpl=19  kr=0.d0  kz=0.d0 /
+!!!!!!! id        fuelid    hgap          cladid    pipeid     pipenode  mltpl     kr       kz       (active region)
+ &XFROD id='FR01' fid='FA'  hgap=1.4d4    cid='C1'  pid='FPS2' pnode= 1  mltpl=19  kr=1.d0  kz=1.d0 /
+ &XFROD id='FR02' fid='FA'  hgap=1.4d4    cid='C1'  pid='FPS2' pnode= 2  mltpl=19  kr=1.d0  kz=1.d0 /
+ &XFROD id='FR03' fid='FA'  hgap=1.4d4    cid='C1'  pid='FPS2' pnode= 3  mltpl=19  kr=1.d0  kz=1.d0 /
+ &XFROD id='FR04' fid='FA'  hgap=1.4d4    cid='C1'  pid='FPS2' pnode= 4  mltpl=19  kr=1.d0  kz=1.d0 /
+ &XFROD id='FR05' fid='FA'  hgap=1.4d4    cid='C1'  pid='FPS2' pnode= 5  mltpl=19  kr=1.d0  kz=1.d0 /
+ &XFROD id='FR06' fid='FA'  hgap=1.4d4    cid='C1'  pid='FPS2' pnode= 6  mltpl=19  kr=1.d0  kz=1.d0 /
+ &XFROD id='FR07' fid='FA'  hgap=1.4d4    cid='C1'  pid='FPS2' pnode= 7  mltpl=19  kr=1.d0  kz=1.d0 /
+ &XFROD id='FR08' fid='FA'  hgap=1.4d4    cid='C1'  pid='FPS2' pnode= 8  mltpl=19  kr=1.d0  kz=1.d0 /
+ &XFROD id='FR09' fid='FA'  hgap=1.4d4    cid='C1'  pid='FPS2' pnode= 9  mltpl=19  kr=1.d0  kz=1.d0 /
+ &XFROD id='FR10' fid='FA'  hgap=1.4d4    cid='C1'  pid='FPS2' pnode=10  mltpl=19  kr=1.d0  kz=1.d0 /
+!!!!!!! id        fuelid    hgap          cladid    pipeid     pipenode  mltpl     kr       kz       (upper dummy rods)
+ &XFROD id='FU01' fid='FD'  hgap=1.4d4    cid='C1'  pid='FPS3' pnode= 1  mltpl=19  kr=0.d0  kz=0.d0 /
+ &XFROD id='FU02' fid='FD'  hgap=1.4d4    cid='C1'  pid='FPS3' pnode= 2  mltpl=19  kr=0.d0  kz=0.d0 /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Heat structure
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Tube wall structure
+!!!!!!! id          matid        ri(m)        ro(m)        nr     tmp0(K)        bcleft       bcright      multiplier
+ &XHSTR id='HS701'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL701'  bcr='BR701'  mltpl=7 /
+ &XHSTR id='HS702'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL702'  bcr='BR702'  mltpl=7 /
+ &XHSTR id='HS703'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL703'  bcr='BR703'  mltpl=7 /
+ &XHSTR id='HS704'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL704'  bcr='BR704'  mltpl=7 /
+ &XHSTR id='HS705'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL705'  bcr='BR705'  mltpl=7 /
+ &XHSTR id='HS706'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL706'  bcr='BR706'  mltpl=7 /
+ &XHSTR id='HS707'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL707'  bcr='BR707'  mltpl=7 /
+ &XHSTR id='HS708'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL708'  bcr='BR708'  mltpl=7 /
+ &XHSTR id='HS709'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL709'  bcr='BR709'  mltpl=7 /
+ &XHSTR id='HS710'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL710'  bcr='BR710'  mltpl=7 /
+ &XHSTR id='HS711'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL711'  bcr='BR711'  mltpl=7 /
+ &XHSTR id='HS712'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL712'  bcr='BR712'  mltpl=7 /
+ &XHSTR id='HS713'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL713'  bcr='BR713'  mltpl=7 /
+ &XHSTR id='HS714'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL714'  bcr='BR714'  mltpl=7 /
+ &XHSTR id='HS715'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL715'  bcr='BR715'  mltpl=7 /
+ &XHSTR id='HS716'  mat='ss316'  ri=31.35d-3  ro=44.45d-3  nr=5   tmp0=4.4315d2  bcl='BL716'  bcr='BR716'  mltpl=7 /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Thermal boundary
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Left boundaries
+!!!!!!! id          category         pipeid       pipenode
+ &XTHBC id='BR701'  cate='coupling'  pid='SECHX'  pnode= 1 /
+ &XTHBC id='BR702'  cate='coupling'  pid='SECHX'  pnode= 2 /
+ &XTHBC id='BR703'  cate='coupling'  pid='SECHX'  pnode= 3 /
+ &XTHBC id='BR704'  cate='coupling'  pid='SECHX'  pnode= 4 /
+ &XTHBC id='BR705'  cate='coupling'  pid='SECHX'  pnode= 5 /
+ &XTHBC id='BR706'  cate='coupling'  pid='SECHX'  pnode= 6 /
+ &XTHBC id='BR707'  cate='coupling'  pid='SECHX'  pnode= 7 /
+ &XTHBC id='BR708'  cate='coupling'  pid='SECHX'  pnode= 8 /
+ &XTHBC id='BR709'  cate='coupling'  pid='SECHX'  pnode= 9 /
+ &XTHBC id='BR710'  cate='coupling'  pid='SECHX'  pnode=10 /
+ &XTHBC id='BR711'  cate='coupling'  pid='SECHX'  pnode=11 /
+ &XTHBC id='BR712'  cate='coupling'  pid='SECHX'  pnode=12 /
+ &XTHBC id='BR713'  cate='coupling'  pid='SECHX'  pnode=13 /
+ &XTHBC id='BR714'  cate='coupling'  pid='SECHX'  pnode=14 /
+ &XTHBC id='BR715'  cate='coupling'  pid='SECHX'  pnode=15 /
+ &XTHBC id='BR716'  cate='coupling'  pid='SECHX'  pnode=16 /
+! Right boundaries
+!!!!!!! id          category         pipeid     
+ &XTHBC id='BL701'  cate='coupling'  pid='HIGHHX' pnode=16 /
+ &XTHBC id='BL702'  cate='coupling'  pid='HIGHHX' pnode=15 /
+ &XTHBC id='BL703'  cate='coupling'  pid='HIGHHX' pnode=14 /
+ &XTHBC id='BL704'  cate='coupling'  pid='HIGHHX' pnode=13 /
+ &XTHBC id='BL705'  cate='coupling'  pid='HIGHHX' pnode=12 /
+ &XTHBC id='BL706'  cate='coupling'  pid='HIGHHX' pnode=11 /
+ &XTHBC id='BL707'  cate='coupling'  pid='HIGHHX' pnode=10 /
+ &XTHBC id='BL708'  cate='coupling'  pid='HIGHHX' pnode= 9 /
+ &XTHBC id='BL709'  cate='coupling'  pid='HIGHHX' pnode= 8 /
+ &XTHBC id='BL710'  cate='coupling'  pid='HIGHHX' pnode= 7 /
+ &XTHBC id='BL711'  cate='coupling'  pid='HIGHHX' pnode= 6 /
+ &XTHBC id='BL712'  cate='coupling'  pid='HIGHHX' pnode= 5 /
+ &XTHBC id='BL713'  cate='coupling'  pid='HIGHHX' pnode= 4 /
+ &XTHBC id='BL714'  cate='coupling'  pid='HIGHHX' pnode= 3 /
+ &XTHBC id='BL715'  cate='coupling'  pid='HIGHHX' pnode= 2 /
+ &XTHBC id='BL716'  cate='coupling'  pid='HIGHHX' pnode= 1 /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+! Signals
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+!!!!!!! id            category         value
+ &XSGNL id='dtprint'  cate='lookup'  
+!signal table
+ sgntab(1,:) = 0.d0, 1.d0, 2.d0, 3.d0, 4.d0, 5.d0, 6.d0, 7.d0, 8.d0, 9.d0
+ sgntab(2,:) = 0.d3, 1.d3, 2.d3, 3.d4, 4.d5, 5.d3, 6.d4, 7.d5, 8.d3, 9.d4
+ /
+!!!!!!! id            category         value
+ &XSGNL id='corepow'  cate='constant'  sgnval=1.d0 /
+!!!!!!! id            category         value
+ &XSGNL id='mfr_2'    cate='lookup'  
+ sgntab(1,:) = 0.d0, 1.d3, 2.0d3, 3.0d3, 4.0d3, 5.0d3, 6.0d3, 7.0d3, 8.0d3, 9.0d3
+ sgntab(2,:) = 0.35, 0.35, 0.35,  0.35,  0.35,  0.35,  0.35,  0.35,  0.35,  0.35
+ /
+!!!!!!! id            category         value
+ &XSGNL id='dphead'   cate='constant'  sgnval=0.d0 /
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
+!----- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- -----------
+!----- -----1----- -----2----- -----3----- -----4----- -----5----- -----6----- -----7----- -----8----- -----9----- -----0-----
