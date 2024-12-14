@@ -29,7 +29,8 @@ LINKFLAGS = -Wl,-rpath,$(libdir)
 
 # ------------------------------------------------------------------------------
 
-Files    = C2_Glodata_mod \
+FILES    = A0_Rooster_fmod
+FILES_DEPENDENCIES = C2_Glodata_mod \
            C1_Interp_mod C1_Getdata_mod C1_Matrix_mod \
            C0_Correlate_mod \
            B3_Fuel_mod B3_Gasgap_mod B3_Clad_mod B3_Thermbc_mod\
@@ -38,9 +39,9 @@ Files    = C2_Glodata_mod \
            B0_Reactor_mod \
            A2_Coupling_mod A2_Control_mod \
            A1_Comprhs_mod  \
-           A0_Rooster_fmod
 
-OBJECTS =  ${Files:=.o}
+OBJECTS =  ${FILES:=.o}
+OBJECTS_DEPENDENCIES = ${FILES_DEPENDENCIES:=.o}
 
 # ------------------------------------------------------------------------------
 
@@ -49,15 +50,17 @@ OBJECTS =  ${Files:=.o}
 	${F90} ${F90FLAGS} ${INCLUDES} -c $<
 
 # ------------------------------------------------------------------------------
-all: ${OBJECTS}
+
+all: ${OBJECTS_DEPENDENCIES} ${OBJECTS}
 	@for i in ${FILES} ; do \
-	  echo "${F90} -o $${i} $${i}.o ${F90FLAGS} ${INCLUDES} -L${libdir} ${LIBRARIES} ${LINKFLAGS} " ; \
-	  ${F90} -o $${i} $${i}.o ${F90FLAGS} ${INCLUDES} -L${libdir} ${LIBRARIES} ${LINKFLAGS} ; \
+	  echo "${F90} -o ${TARGET} $${i}.o ${OBJECTS_DEPENDENCIES} ${F90FLAGS} ${INCLUDES} -L${libdir} ${LIBRARIES} ${LINKFLAGS}" ; \
+	  ${F90} -o ${TARGET} $${i}.o ${OBJECTS_DEPENDENCIES} ${F90FLAGS} ${INCLUDES} -L${libdir} ${LIBRARIES} ${LINKFLAGS} ; \
 	done
-	${F90} ${INCLUDES} -o ${TARGET} ${OBJECTS} ${LIBRARIES} ${LINKFLAGS} 
 
 clean:
 	rm -f *.o *.mod
 	rm -f ${OBJECTS}
+	rm -f ${OBJECTS_DEPENDENCIES}
 	rm -f ${FILES}
+	rm -f ${FILES_DEPENDENCIES}
 # ------------------------------------------------------------------------------
